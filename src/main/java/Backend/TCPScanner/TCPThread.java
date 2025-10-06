@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
-
+import Resource.ScanController;
+import Resource.PortResult;
 /**
  *
  * @author admin
@@ -26,7 +27,7 @@ public class TCPThread implements Runnable{
     }
     
     public void run(){
-        TCPScanController.checkPause();
+        ScanController.checkPause();
         try(Socket socket = new Socket(host, port)){
             resultList.add(new PortResult(port, "Open"));
         } catch (IOException e){

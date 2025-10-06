@@ -1,8 +1,10 @@
+package Resource;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package Backend.TCPScanner;
+
 
 /**
  *
@@ -17,7 +19,7 @@ public class PortResult {
         this.status = status;
     }
     
-    public int getPort(){
+    public int getPort() {
         return port;
     }
     
