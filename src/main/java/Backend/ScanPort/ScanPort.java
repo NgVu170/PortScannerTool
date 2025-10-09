@@ -32,10 +32,10 @@ public class ScanPort {
         this.poolSize = PoolSize;
         this.timeoutMs = Timeout;
     }
-    public List<PortResult> ScanProcess(){
+    public List<PortResult> ScanProcess() throws IOException, InterruptedException, ExecutionException {
         result = new ArrayList<>();
         ExecutorService pool = Executors.newFixedThreadPool(poolSize);
-        CompletionService<PortResult> servicePool= new ExecutorCompletionService<PortResult>(pool);
+        CompletionService<PortResult> servicePool= new ExecutorCompletionService<>(pool);
         
         int task = 0;
         for( int port = startPort; port < endPort; port++){
@@ -49,13 +49,9 @@ public class ScanPort {
         }
         
         for(int i = 0; i < task; i++){
-            try{
-                Future<PortResult> run = servicePool.take();
-                PortResult temp = run.get();
-                result.add(temp);
-            }catch (Exception e) {
-                System.err.println("Task error: " + e.getMessage());
-            }
+            Future<PortResult> run = servicePool.take();
+            PortResult temp = run.get();
+            result.add(temp);
         }
         return result;
     }
