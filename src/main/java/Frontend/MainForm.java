@@ -37,7 +37,6 @@ public class MainForm extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         txtTarget = new javax.swing.JTextField();
-        btnDNS = new javax.swing.JButton();
         btnWHOISLookup = new javax.swing.JButton();
         btnExportFile = new javax.swing.JButton();
         jComboBox2 = new javax.swing.JComboBox<>();
@@ -83,15 +82,22 @@ public class MainForm extends javax.swing.JFrame {
 
         txtTarget.setName("txtTarget"); // NOI18N
 
-        btnDNS.setText("DNS");
-        btnDNS.setName("btnDNS"); // NOI18N
-
         btnWHOISLookup.setText("WHOIS Lookup");
         btnWHOISLookup.setName("btnWHOISLookup"); // NOI18N
+        btnWHOISLookup.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnWHOISLookupActionPerformed(evt);
+            }
+        });
 
         btnExportFile.setForeground(new java.awt.Color(41, 128, 185));
         btnExportFile.setText("Export File");
         btnExportFile.setName("btnExportCSV"); // NOI18N
+        btnExportFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExportFileActionPerformed(evt);
+            }
+        });
 
         jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
@@ -135,7 +141,7 @@ public class MainForm extends javax.swing.JFrame {
                         .addComponent(txtSummary2, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(15, 15, 15)
                         .addComponent(txtSummary3))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 817, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel6)
                         .addGap(44, 44, 44)
@@ -155,9 +161,7 @@ public class MainForm extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnExportFile)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnWHOISLookup)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnDNS)))
+                        .addComponent(btnWHOISLookup)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -183,7 +187,6 @@ public class MainForm extends javax.swing.JFrame {
                     .addComponent(txtSummary3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnDNS)
                     .addComponent(btnSave)
                     .addComponent(btnWHOISLookup)
                     .addComponent(btnExportFile)
@@ -224,7 +227,7 @@ public class MainForm extends javax.swing.JFrame {
             }
         });
 
-        btnScheduleScan.setText("Schedule Scan");
+        btnScheduleScan.setText("Scan IP in Range");
         btnScheduleScan.setName("btnScheduleScan"); // NOI18N
         btnScheduleScan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -252,12 +255,12 @@ public class MainForm extends javax.swing.JFrame {
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnStart, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtIP, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)
-                    .addComponent(btnStop, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnStop, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtIP, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(61, 61, 61)
+                        .addGap(55, 55, 55)
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(cbType, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -265,7 +268,7 @@ public class MainForm extends javax.swing.JFrame {
                         .addComponent(btnScheduleScan)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnLoadIPList)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap(90, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -323,6 +326,7 @@ public class MainForm extends javax.swing.JFrame {
 
     private void btnScheduleScanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnScheduleScanActionPerformed
         // TODO add your handling code here:
+        new ScanIPinRange().setVisible(true);
     }//GEN-LAST:event_btnScheduleScanActionPerformed
 
     private void btnLoadIPListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoadIPListActionPerformed
@@ -356,7 +360,6 @@ public class MainForm extends javax.swing.JFrame {
         txtStatus.setText("Đang quét...");
         txtTarget.setText(target);
 
-        // Giả lập tiến trình quét (có thể thay bằng thread quét thật sau)
         new Thread(() -> {
             try {
                 jProgressBar1.setValue(0);
@@ -365,13 +368,11 @@ public class MainForm extends javax.swing.JFrame {
                     jProgressBar1.setValue(i);
                 }
 
-                // Giả lập kết quả ping
                 txtPing.setText("Ping thành công đến " + target);
 
-                // Giả lập kết quả bảng
                 javax.swing.table.DefaultTableModel model = 
                         (javax.swing.table.DefaultTableModel) tblResult.getModel();
-                model.setRowCount(0); // Xóa dữ liệu cũ
+                model.setRowCount(0);
                 model.addRow(new Object[]{"80", "HTTP", "Open", "Apache/2.4.54"});
                 model.addRow(new Object[]{"443", "HTTPS", "Open", "nginx 1.23"});
                 model.addRow(new Object[]{"22", "SSH", "Closed", "-"});
@@ -391,6 +392,16 @@ public class MainForm extends javax.swing.JFrame {
         txtStatus.setText("Đã dừng quét");
         jProgressBar1.setValue(0);
     }//GEN-LAST:event_btnStopActionPerformed
+
+    private void btnExportFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportFileActionPerformed
+        // TODO add your handling code here:
+        new ExportFile().setVisible(true);
+    }//GEN-LAST:event_btnExportFileActionPerformed
+
+    private void btnWHOISLookupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWHOISLookupActionPerformed
+        // TODO add your handling code here:
+        new WHOISLookup().setVisible(true);
+    }//GEN-LAST:event_btnWHOISLookupActionPerformed
 
     /**
      * @param args the command line arguments
@@ -418,7 +429,6 @@ public class MainForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnDNS;
     private javax.swing.JButton btnExportFile;
     private javax.swing.JButton btnLoadIPList;
     private javax.swing.JButton btnSave;
