@@ -70,25 +70,41 @@ public class MainForm extends javax.swing.JFrame {
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
         jPanel1.setName(""); // NOI18N
 
+        jTextField2.setName("txtStauts"); // NOI18N
+
         jLabel8.setText("Ping Result:");
+
+        jTextField4.setName("txtPingResult"); // NOI18N
 
         jLabel7.setText("Target:");
 
         jLabel6.setText("Status:");
 
+        jTextField3.setName("txtTarget"); // NOI18N
+
         jButton8.setText("DNS");
+        jButton8.setName("btnDNS"); // NOI18N
 
         jButton7.setText("WHOIS Lookup");
+        jButton7.setName("btnWHOISLookup"); // NOI18N
 
         jButton6.setForeground(new java.awt.Color(41, 128, 185));
         jButton6.setText("Export CSV");
+        jButton6.setName("btnExportCSV"); // NOI18N
 
         jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jButton5.setForeground(new java.awt.Color(41, 128, 185));
         jButton5.setText("Save");
+        jButton5.setName("btnSave"); // NOI18N
+
+        jTextField6.setName("txtSummary2"); // NOI18N
 
         jLabel9.setText("Summary:");
+
+        jTextField5.setName("txtSummary1"); // NOI18N
+
+        jTextField7.setName("txtSummary3"); // NOI18N
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -180,17 +196,22 @@ public class MainForm extends javax.swing.JFrame {
 
         jLabel3.setText("IP / Domain :");
 
+        jTextField1.setName("txtIP"); // NOI18N
+
         jLabel4.setText("Scan Type :");
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox1.setName("xbTyoe"); // NOI18N
 
         jButton1.setForeground(new java.awt.Color(39, 169, 96));
         jButton1.setText("Start");
         jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton1.setName("txtStart"); // NOI18N
 
         jButton2.setForeground(new java.awt.Color(192, 57, 43));
         jButton2.setText("Stop");
         jButton2.setToolTipText("");
+        jButton2.setName("txtStop"); // NOI18N
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
@@ -198,8 +219,10 @@ public class MainForm extends javax.swing.JFrame {
         });
 
         jButton3.setText("Schedule Scan");
+        jButton3.setName("btnScheduleScan"); // NOI18N
 
         jButton4.setText("Load IP List");
+        jButton4.setName("txtLoadIPList"); // NOI18N
 
         jProgressBar1.setForeground(new java.awt.Color(153, 255, 153));
 
