@@ -8,6 +8,10 @@ package Frontend;
  *
  * @author Admin
  */
+import java.io.*;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
+import javax.swing.*;
 public class MainForm extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MainForm.class.getName());
@@ -18,6 +22,37 @@ public class MainForm extends javax.swing.JFrame {
     public MainForm() {
         initComponents();
     }
+    
+    private boolean pingHost(String host) {
+        try {
+            InetAddress addr = InetAddress.getByName(host);
+            return addr.isReachable(1000);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    private boolean isPortOpen(String ip, int port, int timeout) {
+        try (Socket socket = new Socket()) {
+            socket.connect(new InetSocketAddress(ip, port), timeout);
+            return true;
+        } catch (IOException ex) {
+            return false;
+        }
+    }
+    
+    private String grabBanner(String ip, int port) {
+        try (Socket socket = new Socket(ip, port)) {
+            socket.setSoTimeout(1000);
+            InputStream in = socket.getInputStream();
+            byte[] buf = new byte[1024];
+            int len = in.read(buf);
+            if (len > 0)
+                return new String(buf, 0, len, StandardCharsets.UTF_8).trim();
+        } catch (IOException ignored) {}
+        return "";
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -30,12 +65,12 @@ public class MainForm extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
-        jTextField2 = new javax.swing.JTextField();
+        txtStatus = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
+        txtPing = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        txtTarget = new javax.swing.JTextField();
         jButton8 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
@@ -46,13 +81,13 @@ public class MainForm extends javax.swing.JFrame {
         jTextField5 = new javax.swing.JTextField();
         jTextField7 = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblResult = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        txtIP = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox<>();
-        jButton1 = new javax.swing.JButton();
+        btnStart = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
@@ -70,27 +105,43 @@ public class MainForm extends javax.swing.JFrame {
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
         jPanel1.setName(""); // NOI18N
 
+        txtStatus.setName("txtStauts"); // NOI18N
+
         jLabel8.setText("Ping Result:");
+
+        txtPing.setName("txtPingResult"); // NOI18N
 
         jLabel7.setText("Target:");
 
         jLabel6.setText("Status:");
 
+        txtTarget.setName("txtTarget"); // NOI18N
+
         jButton8.setText("DNS");
+        jButton8.setName("btnDNS"); // NOI18N
 
         jButton7.setText("WHOIS Lookup");
+        jButton7.setName("btnWHOISLookup"); // NOI18N
 
         jButton6.setForeground(new java.awt.Color(41, 128, 185));
         jButton6.setText("Export CSV");
+        jButton6.setName("btnExportCSV"); // NOI18N
 
         jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jButton5.setForeground(new java.awt.Color(41, 128, 185));
         jButton5.setText("Save");
+        jButton5.setName("btnSave"); // NOI18N
+
+        jTextField6.setName("txtSummary2"); // NOI18N
 
         jLabel9.setText("Summary:");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jTextField5.setName("txtSummary1"); // NOI18N
+
+        jTextField7.setName("txtSummary3"); // NOI18N
+
+        tblResult.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -101,7 +152,7 @@ public class MainForm extends javax.swing.JFrame {
                 "PORT", "SERVICE", "STATE", "BANNER / INFO"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tblResult);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -122,15 +173,15 @@ public class MainForm extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel6)
                         .addGap(44, 44, 44)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel7)
                         .addGap(18, 18, 18)
-                        .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txtTarget, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel8)
                         .addGap(18, 18, 18)
-                        .addComponent(jTextField4))
+                        .addComponent(txtPing))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -149,13 +200,13 @@ public class MainForm extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtTarget, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtPing, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 319, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -180,26 +231,33 @@ public class MainForm extends javax.swing.JFrame {
 
         jLabel3.setText("IP / Domain :");
 
+        txtIP.setName("txtIP"); // NOI18N
+
         jLabel4.setText("Scan Type :");
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox1.setName("xbTyoe"); // NOI18N
 
-        jButton1.setForeground(new java.awt.Color(39, 169, 96));
-        jButton1.setText("Start");
-        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnStart.setForeground(new java.awt.Color(39, 169, 96));
+        btnStart.setText("Start");
+        btnStart.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnStart.setName("btnStart"); // NOI18N
+        btnStart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStartActionPerformed(evt);
+            }
+        });
 
         jButton2.setForeground(new java.awt.Color(192, 57, 43));
         jButton2.setText("Stop");
         jButton2.setToolTipText("");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
+        jButton2.setName("btnStop"); // NOI18N
 
         jButton3.setText("Schedule Scan");
+        jButton3.setName("btnScheduleScan"); // NOI18N
 
         jButton4.setText("Load IP List");
+        jButton4.setName("txtLoadIPList"); // NOI18N
 
         jProgressBar1.setForeground(new java.awt.Color(153, 255, 153));
 
@@ -211,10 +269,10 @@ public class MainForm extends javax.swing.JFrame {
                 .addGap(10, 10, 10)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnStart, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)
+                    .addComponent(txtIP, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)
                     .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -237,7 +295,7 @@ public class MainForm extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap(14, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtIP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3)
                     .addComponent(jLabel4)
                     .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -247,7 +305,7 @@ public class MainForm extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1))
+                        .addComponent(btnStart))
                     .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(15, 15, 15))
         );
@@ -282,9 +340,48 @@ public class MainForm extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+    private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
+        String target = txtTarget.getText().trim();
+        if (target.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter IP or domain!");
+            return;
+        }
+
+        txtStatus.setText("Pinging...");
+        boolean reachable = pingHost(target);
+        txtIP.setText(reachable ? "Reachable" : "Unreachable");
+
+        if (!reachable) {
+            txtStatus.setText("Host not reachable.");
+            return;
+        }
+
+        txtStatus.setText("Scanning ports...");
+        DefaultTableModel model = (DefaultTableModel) tblResult.getModel();
+        model.setRowCount(0);
+
+        int[] ports = {21, 22, 23, 25, 53, 80, 110, 143, 443, 3389};
+
+        new Thread(() -> {
+            for (int port : ports) {
+                boolean open = isPortOpen(target, port, 800);
+                String service = commonPorts.getOrDefault(port, "Unknown");
+                String state = open ? "Open" : "Closed";
+                String banner = open ? grabBanner(target, port) : "";
+
+                if (open && (port == 21 || port == 23)) {
+                    SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(
+                        this,
+                        "⚠️ Warning: " + service + " port (" + port + ") is open. Consider closing it."
+                    ));
+                }
+
+                Object[] row = {port, service, state, banner};
+                SwingUtilities.invokeLater(() -> model.addRow(row));
+            }
+            txtStatus.setText("Scan complete.");
+        }).start();
+    }//GEN-LAST:event_btnStartActionPerformed
 
     /**
      * @param args the command line arguments
@@ -312,7 +409,7 @@ public class MainForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnStart;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
@@ -333,13 +430,13 @@ public class MainForm extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
     private javax.swing.JTextField jTextField6;
     private javax.swing.JTextField jTextField7;
+    private javax.swing.JTable tblResult;
+    private javax.swing.JTextField txtIP;
+    private javax.swing.JTextField txtPing;
+    private javax.swing.JTextField txtStatus;
+    private javax.swing.JTextField txtTarget;
     // End of variables declaration//GEN-END:variables
 }
