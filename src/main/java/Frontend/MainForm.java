@@ -61,8 +61,9 @@ public class MainForm extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(244, 246, 248));
 
-        jLabel1.setFont(new java.awt.Font("UTM Impact", 1, 36)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(52, 152, 219));
+        jLabel1.setFont(new java.awt.Font("UTM Impact", 1, 20)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(0, 120, 212));
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText(" NETWORK SECURITY SCANNER  ");
         jLabel1.setToolTipText("");
 
@@ -101,7 +102,8 @@ public class MainForm extends javax.swing.JFrame {
 
         jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        btnSave.setForeground(new java.awt.Color(41, 128, 185));
+        btnSave.setBackground(new java.awt.Color(33, 150, 243));
+        btnSave.setForeground(new java.awt.Color(255, 255, 255));
         btnSave.setText("Save");
         btnSave.setName("btnSave"); // NOI18N
 
@@ -124,6 +126,9 @@ public class MainForm extends javax.swing.JFrame {
                 "PORT", "SERVICE", "STATE", "BANNER / INFO"
             }
         ));
+        tblResult.setGridColor(new java.awt.Color(204, 204, 204));
+        tblResult.setRowHeight(25);
+        tblResult.setShowHorizontalLines(true);
         jScrollPane1.setViewportView(tblResult);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -141,7 +146,7 @@ public class MainForm extends javax.swing.JFrame {
                         .addComponent(txtSummary2, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(15, 15, 15)
                         .addComponent(txtSummary3))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 817, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel6)
                         .addGap(44, 44, 44)
@@ -194,20 +199,24 @@ public class MainForm extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel2.setBackground(new java.awt.Color(204, 255, 255));
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        jPanel2.setBackground(new java.awt.Color(230, 242, 255));
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Scan Options"));
         jPanel2.setToolTipText("");
 
+        jLabel3.setForeground(new java.awt.Color(0, 51, 102));
         jLabel3.setText("IP / Domain :");
 
         txtIP.setName("txtIP"); // NOI18N
 
+        jLabel4.setForeground(new java.awt.Color(0, 51, 102));
         jLabel4.setText("Scan Type :");
 
         cbType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         cbType.setName("xbTyoe"); // NOI18N
 
-        btnStart.setForeground(new java.awt.Color(39, 169, 96));
+        btnStart.setBackground(new java.awt.Color(76, 175, 80));
+        btnStart.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btnStart.setForeground(new java.awt.Color(255, 255, 255));
         btnStart.setText("Start");
         btnStart.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnStart.setName("btnStart"); // NOI18N
@@ -217,7 +226,8 @@ public class MainForm extends javax.swing.JFrame {
             }
         });
 
-        btnStop.setForeground(new java.awt.Color(192, 57, 43));
+        btnStop.setBackground(new java.awt.Color(231, 76, 60));
+        btnStop.setForeground(new java.awt.Color(255, 255, 255));
         btnStop.setText("Stop");
         btnStop.setToolTipText("");
         btnStop.setName("btnStop"); // NOI18N
@@ -268,7 +278,7 @@ public class MainForm extends javax.swing.JFrame {
                         .addComponent(btnScheduleScan)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnLoadIPList)
-                        .addContainerGap(90, Short.MAX_VALUE))
+                        .addContainerGap(94, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -298,23 +308,15 @@ public class MainForm extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(132, 132, 132)
-                .addComponent(jLabel1)
-                .addContainerGap(111, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(15, 15, 15)
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
