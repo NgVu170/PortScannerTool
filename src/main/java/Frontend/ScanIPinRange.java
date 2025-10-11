@@ -66,11 +66,19 @@ public class ScanIPinRange extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setBackground(new java.awt.Color(245, 247, 250));
 
-        jLabel1.setText("🔍 SCAN IP IN RANGE  ");
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(0, 120, 212));
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("SCAN IP IN RANGE  ");
+        jLabel1.setOpaque(true);
 
+        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel7.setText("Scan Results");
 
+        tblResultRange.setBackground(new java.awt.Color(233, 237, 245));
+        tblResultRange.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
         tblResultRange.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -82,15 +90,25 @@ public class ScanIPinRange extends javax.swing.JFrame {
                 "IP Address", "Hostname", "Status", "Open Ports"
             }
         ));
+        tblResultRange.setGridColor(new java.awt.Color(221, 221, 221));
+        tblResultRange.setRowHeight(25);
         jScrollPane1.setViewportView(tblResultRange);
 
+        txtStart.setBackground(new java.awt.Color(40, 167, 69));
+        txtStart.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
+        txtStart.setForeground(new java.awt.Color(255, 255, 255));
         txtStart.setText("Start Scan");
+        txtStart.setBorderPainted(false);
+        txtStart.setFocusPainted(false);
         txtStart.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtStartActionPerformed(evt);
             }
         });
 
+        btnStop.setBackground(new java.awt.Color(220, 53, 69));
+        btnStop.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
+        btnStop.setForeground(new java.awt.Color(255, 255, 255));
         btnStop.setText("Stop Scan");
         btnStop.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -98,6 +116,9 @@ public class ScanIPinRange extends javax.swing.JFrame {
             }
         });
 
+        btnExportRange.setBackground(new java.awt.Color(0, 120, 212));
+        btnExportRange.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
+        btnExportRange.setForeground(new java.awt.Color(255, 255, 255));
         btnExportRange.setText("Export Result");
         btnExportRange.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -105,6 +126,9 @@ public class ScanIPinRange extends javax.swing.JFrame {
             }
         });
 
+        btnCloseRange.setBackground(new java.awt.Color(108, 117, 125));
+        btnCloseRange.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
+        btnCloseRange.setForeground(new java.awt.Color(255, 255, 255));
         btnCloseRange.setText("Close");
         btnCloseRange.setToolTipText("");
         btnCloseRange.addActionListener(new java.awt.event.ActionListener() {
@@ -113,7 +137,8 @@ public class ScanIPinRange extends javax.swing.JFrame {
             }
         });
 
-        jPanel1.setBackground(new java.awt.Color(204, 255, 255));
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 13))); // NOI18N
 
         cbScanType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         cbScanType.setToolTipText("");
@@ -141,7 +166,7 @@ public class ScanIPinRange extends javax.swing.JFrame {
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cbScanType, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel4)
@@ -151,7 +176,7 @@ public class ScanIPinRange extends javax.swing.JFrame {
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtThreadCount, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -181,38 +206,27 @@ public class ScanIPinRange extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(135, 135, 135)
-                .addComponent(jLabel1)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 458, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                            .addComponent(progressBarRange, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addContainerGap())
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                            .addComponent(txtStart)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(btnStop)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(btnExportRange)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(btnCloseRange, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(12, 12, 12))
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(157, 157, 157)
-                            .addComponent(jLabel7))
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addComponent(txtStart)
+                .addGap(18, 18, 18)
+                .addComponent(btnStop)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnExportRange)
+                .addGap(18, 18, 18)
+                .addComponent(btnCloseRange, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+            .addComponent(progressBarRange, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
+                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -229,6 +243,10 @@ public class ScanIPinRange extends javax.swing.JFrame {
                     .addComponent(btnCloseRange))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        txtStart.getAccessibleContext().setAccessibleName("Start Scan");
+        btnStop.getAccessibleContext().setAccessibleName("Stop Scan");
+        btnExportRange.getAccessibleContext().setAccessibleName("Export Result");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
