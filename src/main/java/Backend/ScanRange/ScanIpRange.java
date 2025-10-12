@@ -36,7 +36,7 @@ public class ScanIpRange {
                 resultOfAll.add(resultOneIp);
             } catch (Exception e) {
                 System.err.println("Error scanning IP: " + ip + " - " + e.getMessage());
-                resultOfAll.add(Collections.emptyList()); // hoặc bỏ qua tùy ý
+                resultOfAll.add(Collections.emptyList());
             }
         }
         return resultOfAll;

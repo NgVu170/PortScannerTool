@@ -17,6 +17,14 @@ public class MainForm extends javax.swing.JFrame {
      */
     public MainForm() {
         initComponents();
+        cbType.removeAllItems();
+        cbType.addItem("UDP");
+        cbType.addItem("TCP");
+        cbType.addItem("Both");
+        
+        cbxSaveType.removeAllItems();
+        cbxSaveType.addItem("Text file | *.txt");
+        cbxSaveType.addItem("JSOn file | *.json");
     }
 
 
@@ -39,7 +47,7 @@ public class MainForm extends javax.swing.JFrame {
         txtTarget = new javax.swing.JTextField();
         btnWHOISLookup = new javax.swing.JButton();
         btnExportFile = new javax.swing.JButton();
-        jComboBox2 = new javax.swing.JComboBox<>();
+        cbxSaveType = new javax.swing.JComboBox<>();
         btnSave = new javax.swing.JButton();
         txtSummary2 = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
@@ -100,7 +108,7 @@ public class MainForm extends javax.swing.JFrame {
             }
         });
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbxSaveType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         btnSave.setBackground(new java.awt.Color(33, 150, 243));
         btnSave.setForeground(new java.awt.Color(255, 255, 255));
@@ -162,7 +170,7 @@ public class MainForm extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(cbxSaveType, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnExportFile)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -175,9 +183,9 @@ public class MainForm extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7)
-                    .addComponent(txtTarget, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtTarget, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
@@ -195,7 +203,7 @@ public class MainForm extends javax.swing.JFrame {
                     .addComponent(btnSave)
                     .addComponent(btnWHOISLookup)
                     .addComponent(btnExportFile)
-                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cbxSaveType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -212,7 +220,7 @@ public class MainForm extends javax.swing.JFrame {
         jLabel4.setText("Scan Type :");
 
         cbType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        cbType.setName("xbTyoe"); // NOI18N
+        cbType.setName("xbType"); // NOI18N
 
         btnStart.setBackground(new java.awt.Color(76, 175, 80));
         btnStart.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -439,7 +447,7 @@ public class MainForm extends javax.swing.JFrame {
     private javax.swing.JButton btnStop;
     private javax.swing.JButton btnWHOISLookup;
     private javax.swing.JComboBox<String> cbType;
-    private javax.swing.JComboBox<String> jComboBox2;
+    private javax.swing.JComboBox<String> cbxSaveType;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
