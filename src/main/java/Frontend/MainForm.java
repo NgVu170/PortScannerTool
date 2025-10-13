@@ -4,6 +4,15 @@
  */
 package Frontend;
 
+
+import Backend.Resource.PortResult;
+import Backend.ScanPort.ScanPort;
+import Frontend.PortResultCellRender;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author Admin
@@ -11,12 +20,18 @@ package Frontend;
 public class MainForm extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MainForm.class.getName());
+    AtomicBoolean isScanning = new AtomicBoolean(true);
 
     /**
      * Creates new form MainForm
      */
     public MainForm() {
         initComponents();
+        String[] columnNames = {"PORT", "SERVICE", "STATE", "BANNER/INFO"};
+        DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+        tblResult.setModel(model);
+        tblResult.setDefaultRenderer(Object.class, new PortResultCellRender());
+        
         cbType.removeAllItems();
         cbType.addItem("UDP");
         cbType.addItem("TCP");
@@ -181,11 +196,12 @@ public class MainForm extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel7)
-                    .addComponent(txtTarget, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel7)
+                        .addComponent(txtTarget, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
@@ -269,9 +285,9 @@ public class MainForm extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(10, 10, 10)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnStart, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnStart, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnStop, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -357,11 +373,40 @@ public class MainForm extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnLoadIPListActionPerformed
 
+    private int countTotalPorts(List<PortResult> results) {
+        return results != null ? results.size() : 0;
+    }
+
+    private int countOpenPorts(List<PortResult> results) {
+        int count = 0;
+        for (PortResult r : results) {
+            if ("open".equalsIgnoreCase(r.getState())) {
+                count++;
+            }
+        }
+        return count;
+    }
+    
+    private int countClosedPorts(List<PortResult> results) {
+        int count = 0;
+        for (PortResult r : results) {
+            if ("closed".equalsIgnoreCase(r.getState())) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
         // TODO add your handling code here:
         String target = txtIP.getText().trim();
         String scanType = (String) cbType.getSelectedItem();
-
+        int startPort = 1;
+        int endPort = 1024;
+        int poolSize = 50;
+        int timeoutMs = 200;
+        isScanning.set(true);
+        
         if (target.isEmpty()) {
             javax.swing.JOptionPane.showMessageDialog(this, "Vui lòng nhập IP hoặc Domain!");
             return;
@@ -380,25 +425,55 @@ public class MainForm extends javax.swing.JFrame {
 
                 txtPing.setText("Ping thành công đến " + target);
 
-                javax.swing.table.DefaultTableModel model = 
-                        (javax.swing.table.DefaultTableModel) tblResult.getModel();
-                model.setRowCount(0);
-                model.addRow(new Object[]{"80", "HTTP", "Open", "Apache/2.4.54"});
-                model.addRow(new Object[]{"443", "HTTPS", "Open", "nginx 1.23"});
-                model.addRow(new Object[]{"22", "SSH", "Closed", "-"});
+                ScanPort scanner = new ScanPort(startPort, endPort, target, scanType, poolSize, timeoutMs, isScanning);
+                List<PortResult> results = scanner.ScanProcess();
+                results.sort(Comparator.comparingInt(PortResult::getPort));
+                
+                DefaultTableModel model = (DefaultTableModel) tblResult.getModel();
+                model.setRowCount(0); // Xóa dữ liệu cũ
 
+                int openCount = 0;
+                int closedCount = 0;
+
+                for (PortResult r : results) {
+                    String state = r.getState(); // "open", "closed", v.v.
+                    String service = r.getService() != null ? r.getService() : "-";
+                    String banner = r.getBanner() != null ? r.getBanner() : "-";
+
+                    model.addRow(new Object[]{
+                        target + "/" + r.getPort(),
+                        service,
+                        state,
+                        banner
+                    });
+
+                    if ("open".equalsIgnoreCase(state)) openCount++;
+                    else closedCount++;
+                }
+
+                int total = countTotalPorts(results);
+                int open = countOpenPorts(results);
+                int closed = countClosedPorts(results);
+                
                 txtStatus.setText("Hoàn tất quét (" + scanType + ")");
-                txtSummary1.setText("3 ports");
-                txtSummary2.setText("2 open");
-                txtSummary3.setText("1 closed");
+                txtSummary1.setText(total + " ports");
+                txtSummary2.setText(open + " open");
+                txtSummary3.setText(closed + " closed");
+                System.out.println("Tổng số kết quả: " + results.size());
             } catch (InterruptedException e) {
                 txtStatus.setText("Đã dừng");
+            } catch (IOException ex) {
+                System.getLogger(MainForm.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            } catch (ExecutionException ex) {
+                System.getLogger(MainForm.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
             }
         }).start();
+        
     }//GEN-LAST:event_btnStartActionPerformed
 
     private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopActionPerformed
         // TODO add your handling code here:
+        isScanning.set(false);
         txtStatus.setText("Đã dừng quét");
         jProgressBar1.setValue(0);
     }//GEN-LAST:event_btnStopActionPerformed

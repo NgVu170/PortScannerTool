@@ -17,6 +17,7 @@ public class ScanIPinRange extends javax.swing.JFrame {
      */
     public ScanIPinRange() {
         initComponents();
+        
     }
     
     private volatile boolean stopScan = false;

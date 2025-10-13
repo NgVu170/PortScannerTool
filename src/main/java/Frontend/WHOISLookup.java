@@ -176,17 +176,9 @@ public class WHOISLookup extends javax.swing.JFrame {
             result.append("=== WHOIS Information ===\n");
 
             // Kết nối WHOIS server chuẩn (port 43)
-            try (java.net.Socket socket = new java.net.Socket("whois.iana.org", 43);
-                 java.io.BufferedWriter bw = new java.io.BufferedWriter(new java.io.OutputStreamWriter(socket.getOutputStream()));
-                 java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(socket.getInputStream()))) {
-
-                bw.write(domain + "\r\n");
-                bw.flush();
-
-                String line;
-                while ((line = br.readLine()) != null) {
-                    result.append(line).append("\n");
-                }
+            try {
+                String whoisInfo = Backend.WhoisLookup.WhoisLookup.getWhois(domain);
+                result.append(whoisInfo);
             } catch (Exception e) {
                 result.append("WHOIS lookup failed: ").append(e.getMessage()).append("\n");
             }

@@ -52,11 +52,11 @@ public class ScanIpRange {
         
         int taskCount = 0;
         for (int port : portsToScan) {
-            if (protocol.equals("tcp") || protocol.equals("both")) {
+            if (protocol.equals("TCP") || protocol.equals("Both")) {
                 servicePool.submit(new TCPWorker(ipString, port, 300));
                 taskCount++;
             }
-            if (protocol.equals("udp") || protocol.equals("both")) {
+            if (protocol.equals("UDP") || protocol.equals("Both")) {
                 servicePool.submit(new UDPWorker(ipString, port, 300));
                 taskCount++;
             }   

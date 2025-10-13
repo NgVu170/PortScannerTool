@@ -10,6 +10,7 @@ import Backend.UDP.UDPWorker;
 import java.util.*;
 import java.io.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  *
@@ -23,14 +24,16 @@ public class ScanPort {
     private List<PortResult> result;
     private final int poolSize;
     private final int timeoutMs;
+    private AtomicBoolean isScanning = new AtomicBoolean(true);
     
-    public ScanPort(int start, int end, String host, String protocol, int PoolSize, int Timeout){
+    public ScanPort(int start, int end, String host, String protocol, int PoolSize, int Timeout, AtomicBoolean isScanning){
         this.startPort = start;
         this.endPort = end;
         this.host = host;
         this.protocol = protocol;
         this.poolSize = PoolSize;
         this.timeoutMs = Timeout;
+        this.isScanning = isScanning;
     }
     public List<PortResult> ScanProcess() throws IOException, InterruptedException, ExecutionException {
         result = new ArrayList<>();
@@ -38,15 +41,19 @@ public class ScanPort {
         CompletionService<PortResult> servicePool= new ExecutorCompletionService<>(pool);
         
         int task = 0;
-        for( int port = startPort; port < endPort; port++){
-            if(protocol.equals("tcp") || protocol.equals("both")){
+        for (int port = startPort; port < endPort; port++) {
+            if (!isScanning.get()) break;
+
+            if (protocol.equals("TCP") || protocol.equals("Both")) {
                 servicePool.submit(new TCPWorker(host, port, timeoutMs));
                 task++;
-            } else if(protocol.equals("udp") || protocol.equals("both")){
+            }
+            if (protocol.equals("UDP") || protocol.equals("Both")) {
                 servicePool.submit(new UDPWorker(host, port, timeoutMs));
                 task++;
             }
         }
+
         
         for(int i = 0; i < task; i++){
             Future<PortResult> run = servicePool.take();

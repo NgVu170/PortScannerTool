@@ -37,9 +37,25 @@ public class TCPWorker implements Callable<PortResult> {
         return null;
     }
     
+    private String guessServiceFallback(int port, String banner) {
+        String service = guessService(banner);
+        if (service != null) return service;
+
+        switch (port) {
+            case 80: return "HTTP";
+            case 443: return "HTTPS";
+            case 22: return "SSH";
+            case 53: return "DNS";
+            case 25: return "SMTP";
+            case 21: return "FTP";
+            default: return "Unknown";
+        }
+    }
+
+    
     @Override
     public PortResult call(){
-        PortResult result = new PortResult(host, port, "tcp");
+        PortResult result = new PortResult(host, port, "TCP");
         Socket socket = null;
         long start = System.currentTimeMillis();
         
@@ -56,21 +72,27 @@ public class TCPWorker implements Callable<PortResult> {
                 if (read > 0){
                     String banner = new String (bannerAuto,0,read,"UTF-8").trim();
                     result.setBanner(banner);
-                    result.setService(guessService(banner));
+                    result.setService(guessServiceFallback(port, banner));
                 } else{
-                    if(port == 80){
-                        try{
+                    if (port == 80) {
+                        try {
                             OutputStream out = socket.getOutputStream();
                             out.write("HEAD / HTTP/1.0\r\n\r\n".getBytes("UTF-8"));
                             out.flush();
                             byte[] bannerHttp = new byte[1024];
                             int rlen = input.read(bannerHttp);
-                            if(rlen > 0){
+                            if (rlen > 0) {
                                 String banner2 = new String(bannerHttp, 0, rlen, "UTF-8").trim();
                                 result.setBanner(banner2);
-                                result.setService(guessService(banner2));
+                                result.setService(guessServiceFallback(port, banner2));
+                            } else {
+                                result.setService(guessServiceFallback(port, null));
                             }
-                        } catch (Exception ignore) {}
+                        } catch (Exception ignore) {
+                            result.setService(guessServiceFallback(port, null));
+                        }
+                    } else {
+                        result.setService(guessServiceFallback(port, null));
                     }
                 }
             } catch (SocketTimeoutException ste) {

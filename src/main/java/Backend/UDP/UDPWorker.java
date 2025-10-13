@@ -31,7 +31,7 @@ public class UDPWorker implements Callable<PortResult>{
     
     @Override
     public PortResult call(){
-        PortResult result = new PortResult(host, port, "utp");
+        PortResult result = new PortResult(host, port, "UDP");
         DatagramSocket socket = null;
         long start = System.currentTimeMillis();
         try{
