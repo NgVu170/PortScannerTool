@@ -17,6 +17,10 @@ public class ScanIPinRange extends javax.swing.JFrame {
      */
     public ScanIPinRange() {
         initComponents();
+        cbScanType.removeAllItems();
+        cbScanType.addItem("TCP");
+        cbScanType.addItem("UDP");
+        cbScanType.addItem("Both");
         
     }
     
