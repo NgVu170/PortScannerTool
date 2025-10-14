@@ -35,7 +35,7 @@ public class TCPWorker implements Callable<PortResult> {
         if (banner.contains("mysql") 
                 || banner.contains("mariadb")) return "mysql";
         return null;
-    }
+    }Python: Select Interpreter
     
     private String guessServiceFallback(int port, String banner) {
         String service = guessService(banner);
