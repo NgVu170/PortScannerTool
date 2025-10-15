@@ -1,12 +1,11 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Backend.TCP;
+
 import Backend.Resource.PortResult;
 import java.net.*;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
+
 /**
  *
  * @author admin
@@ -15,17 +14,17 @@ public class TCPWorker implements Callable<PortResult> {
     private final String host;
     private final int port;
     private final int timeoutMs;
-    
+
     public TCPWorker(String host, int port, int timeoutMs){
         this.host = host;
         this.port = port;
         this.timeoutMs = timeoutMs;
     }
-    
+
     private String guessService(String Banner){
         if (Banner == null) return null;
         String banner = Banner.toLowerCase();
-        
+
         if (banner.contains("ssh")) return "ssh";
         if (banner.contains("smtp")) return "smtp";
         if (banner.contains("ftp")) return "ftp";
@@ -35,54 +34,65 @@ public class TCPWorker implements Callable<PortResult> {
         if (banner.contains("mysql") 
                 || banner.contains("mariadb")) return "mysql";
         return null;
-    }Python: Select Interpreter
-    
+    }
+
     private String guessServiceFallback(int port, String banner) {
         String service = guessService(banner);
         if (service != null) return service;
 
         switch (port) {
-            case 80: return "HTTP";
-            case 443: return "HTTPS";
-            case 22: return "SSH";
-            case 53: return "DNS";
-            case 25: return "SMTP";
-            case 21: return "FTP";
-            default: return "Unknown";
+            case 80: return "http";
+            case 443: return "https";
+            case 22: return "ssh";
+            case 53: return "dns";
+            case 25: return "smtp";
+            case 21: return "ftp";
+            default: return "unknown";
         }
     }
 
-    
     @Override
     public PortResult call(){
         PortResult result = new PortResult(host, port, "TCP");
         Socket socket = null;
         long start = System.currentTimeMillis();
-        
+
         try{
             socket = new Socket();
             socket.connect(new InetSocketAddress(host, port), timeoutMs);
             socket.setSoTimeout(Math.min(1000, Math.max(200, timeoutMs)));
-            result.setState("Open");
-            
+            result.setState("open"); // standardized lower-case
+
             try{
                 InputStream input = socket.getInputStream();
                 byte[] bannerAuto = new byte[1024];
-                int read = input.read(bannerAuto);
+                int read = -1;
+                try {
+                    read = input.read(bannerAuto);
+                } catch (SocketTimeoutException ste) {
+                    // timed out reading banner - we'll treat as no banner
+                    read = -1;
+                }
+
                 if (read > 0){
-                    String banner = new String (bannerAuto,0,read,"UTF-8").trim();
+                    String banner = new String(bannerAuto, 0, read, StandardCharsets.UTF_8).trim();
                     result.setBanner(banner);
                     result.setService(guessServiceFallback(port, banner));
                 } else{
                     if (port == 80) {
                         try {
                             OutputStream out = socket.getOutputStream();
-                            out.write("HEAD / HTTP/1.0\r\n\r\n".getBytes("UTF-8"));
+                            out.write("HEAD / HTTP/1.0\r\n\r\n".getBytes(StandardCharsets.UTF_8));
                             out.flush();
                             byte[] bannerHttp = new byte[1024];
-                            int rlen = input.read(bannerHttp);
+                            int rlen = -1;
+                            try {
+                                rlen = input.read(bannerHttp);
+                            } catch (SocketTimeoutException ste) {
+                                rlen = -1;
+                            }
                             if (rlen > 0) {
-                                String banner2 = new String(bannerHttp, 0, rlen, "UTF-8").trim();
+                                String banner2 = new String(bannerHttp, 0, rlen, StandardCharsets.UTF_8).trim();
                                 result.setBanner(banner2);
                                 result.setService(guessServiceFallback(port, banner2));
                             } else {
@@ -95,8 +105,6 @@ public class TCPWorker implements Callable<PortResult> {
                         result.setService(guessServiceFallback(port, null));
                     }
                 }
-            } catch (SocketTimeoutException ste) {
-                // no banner within short time
             } catch (IOException ioe) {
                 // ignore banner reading errors
             }

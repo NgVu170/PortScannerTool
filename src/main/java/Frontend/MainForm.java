@@ -8,10 +8,13 @@ package Frontend;
 import Backend.Resource.PortResult;
 import Backend.ScanPort.ScanPort;
 import Frontend.PortResultCellRender;
+import Backend.TCP.PythonClient;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 /**
  *
@@ -21,6 +24,7 @@ public class MainForm extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MainForm.class.getName());
     AtomicBoolean isScanning = new AtomicBoolean(true);
+    private Backend.TCP.PythonClient pyClient = null;
 
     /**
      * Creates new form MainForm
@@ -36,6 +40,7 @@ public class MainForm extends javax.swing.JFrame {
         cbType.addItem("UDP");
         cbType.addItem("TCP");
         cbType.addItem("Both");
+        cbType.addItem("Advanced");
         
         cbxSaveType.removeAllItems();
         cbxSaveType.addItem("Text file | *.txt");
@@ -417,14 +422,116 @@ public class MainForm extends javax.swing.JFrame {
 
         new Thread(() -> {
             try {
-                jProgressBar1.setValue(0);
-                for (int i = 0; i <= 100; i += 10) {
-                    Thread.sleep(150);
-                    jProgressBar1.setValue(i);
-                }
+                SwingUtilities.invokeLater(() -> {
+                    jProgressBar1.setValue(0);
+                });
 
                 txtPing.setText("Ping thành công đến " + target);
 
+                if ("Advanced".equalsIgnoreCase(scanType)) {
+                // chuẩn bị job cho Python server (connect-mode)
+                Map<String,Object> job = new HashMap<>();
+                job.put("target", target);
+                // nếu bạn muốn gửi ports list thay vì start/end, thay "start"/"end" bằng "ports"
+                job.put("start", startPort);
+                job.put("end", endPort);
+                job.put("timeout", ((double) timeoutMs)/1000.0);
+                job.put("workers", poolSize);
+
+                try {
+                    // tạo client tới Python server (đảm bảo server đang chạy trên localhost:9000)
+                    pyClient = new Backend.TCP.PythonClient("127.0.0.1", 9000);
+
+                    DefaultTableModel model = (DefaultTableModel) tblResult.getModel();
+                    SwingUtilities.invokeLater(() -> model.setRowCount(0));
+
+                    final AtomicInteger totalCount = new AtomicInteger(endPort - startPort + 1);
+                    final AtomicInteger doneCount = new AtomicInteger(0);
+                    final AtomicInteger openCount = new AtomicInteger(0);
+                    final AtomicInteger closedCount = new AtomicInteger(0);
+
+                    pyClient.startScan(job, (Map<String,Object> resp) -> {
+                        // callback chạy trong background thread -> cập nhật UI trên EDT
+                        SwingUtilities.invokeLater(() -> {
+                            // nếu header
+                            if (resp.containsKey("status") && "started".equalsIgnoreCase(String.valueOf(resp.get("status")))) {
+                                txtStatus.setText("Python scan started: " + resp.get("target"));
+                                // nếu server trả count, có thể dùng để set totalCount
+                                if (resp.containsKey("count")) {
+                                    try {
+                                        int c = ((Number) resp.get("count")).intValue();
+                                        totalCount.set(c);
+                                    } catch (Exception ignore) {}
+                                }
+                                return;
+                            }
+
+                            // nếu error hoặc done
+                            if (resp.containsKey("error")) {
+                                txtStatus.setText("Error: " + resp.get("error"));
+                                return;
+                            }
+                            if (resp.containsKey("status") && "done".equalsIgnoreCase(String.valueOf(resp.get("status")))) {
+                                txtStatus.setText("Hoàn tất quét (Advanced)");
+                                txtSummary1.setText(totalCount.get() + " ports");
+                                txtSummary2.setText(openCount.get() + " open");
+                                txtSummary3.setText(closedCount.get() + " closed");
+                                jProgressBar1.setValue(100);
+                                // close client
+                                try { if (pyClient != null) pyClient.stop(); } catch (Exception e) {}
+                                pyClient = null;
+                                return;
+                            }
+
+                            // chuẩn hoá key: server có thể trả "result" hoặc "state"
+                            Object portO = resp.get("port");
+                            if (portO != null) {
+                                int port = ((Number) portO).intValue();
+                                String state = null;
+                                if (resp.containsKey("state")) state = String.valueOf(resp.get("state"));
+                                else if (resp.containsKey("result")) state = String.valueOf(resp.get("result"));
+                                else state = "unknown";
+
+                                String service = resp.containsKey("service") ? String.valueOf(resp.get("service")) : "-";
+                                String banner = resp.containsKey("banner") ? String.valueOf(resp.get("banner")) : "-";
+
+                                DefaultTableModel m = (DefaultTableModel) tblResult.getModel();
+                                m.addRow(new Object[]{ target + "/" + port, service, state, banner });
+
+                                // update counters
+                                doneCount.incrementAndGet();
+                                if (state.toLowerCase().contains("open")) openCount.incrementAndGet();
+                                else closedCount.incrementAndGet();
+
+                                // progress
+                                int total = Math.max(1, totalCount.get());
+                                int p = Math.min(100, (int)((doneCount.get() * 100.0f) / total));
+                                jProgressBar1.setValue(p);
+
+                                // live summary
+                                txtSummary1.setText(doneCount.get() + " scanned");
+                                txtSummary2.setText(openCount.get() + " open");
+                                txtSummary3.setText(closedCount.get() + " closed");
+                            }
+                        });
+                    });
+
+                    // set status
+                    SwingUtilities.invokeLater(() -> {
+                        txtStatus.setText("Đang quét (Advanced) " + target);
+                        txtPing.setText("Ping thành công đến " + target);
+                    });
+
+                } catch (IOException ex) {
+                    SwingUtilities.invokeLater(() -> {
+                        javax.swing.JOptionPane.showMessageDialog(this, "Không thể kết nối Python server: " + ex.getMessage());
+                        txtStatus.setText("Lỗi kết nối tới Python");
+                    });
+                }
+
+                return; // kết thúc nhánh Advanced
+            }
+                
                 ScanPort scanner = new ScanPort(startPort, endPort, target, scanType, poolSize, timeoutMs, isScanning);
                 List<PortResult> results = scanner.ScanProcess();
                 results.sort(Comparator.comparingInt(PortResult::getPort));
@@ -471,11 +578,15 @@ public class MainForm extends javax.swing.JFrame {
         
     }//GEN-LAST:event_btnStartActionPerformed
 
-    private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopActionPerformed
-        // TODO add your handling code here:
+   private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {
         isScanning.set(false);
         txtStatus.setText("Đã dừng quét");
         jProgressBar1.setValue(0);
+
+        if (pyClient != null) {
+            pyClient.stop(); // đóng socket -> server sẽ thấy connection closed
+            pyClient = null;
+        }
     }//GEN-LAST:event_btnStopActionPerformed
 
     private void btnExportFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportFileActionPerformed
