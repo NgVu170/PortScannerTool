@@ -4,6 +4,8 @@
  */
 package Frontend;
 
+import java.util.List;
+
 /**
  *
  * @author Admin
@@ -17,6 +19,50 @@ public class ExportFile extends javax.swing.JFrame {
      */
     public ExportFile() {
         initComponents();
+    }
+    
+    private List<String[]> exportData;
+    private String[] headers;
+    
+    
+    private void exportToTxt(java.io.File file) throws java.io.IOException {
+        try (java.io.PrintWriter writer = new java.io.PrintWriter(file)) {
+            if (headers != null) writer.println(String.join("\t", headers));
+            for (String[] row : exportData) {
+                writer.println(String.join("\t", row));
+            }
+        }
+    }
+
+    private void exportToJson(java.io.File file) throws java.io.IOException {
+        try (java.io.PrintWriter writer = new java.io.PrintWriter(file)) {
+            writer.println("[");
+            for (int i = 0; i < exportData.size(); i++) {
+                String[] row = exportData.get(i);
+                writer.print("  {");
+                for (int j = 0; j < row.length; j++) {
+                    writer.printf("\"%s\": \"%s\"", headers[j], row[j]);
+                    if (j < row.length - 1) writer.print(", ");
+                }
+                writer.print("}");
+                if (i < exportData.size() - 1) writer.println(",");
+                else writer.println();
+            }
+            writer.println("]");
+        }
+    }
+
+
+
+    public ExportFile(List<String[]> data, String[] string) {
+        this.exportData = data;
+        this.headers = headers;
+        initComponents();
+
+        javax.swing.ButtonGroup group = new javax.swing.ButtonGroup();
+        group.add(rbTXT);
+        group.add(rbJSON);
+        rbTXT.setSelected(true);
     }
 
     /**
@@ -39,7 +85,6 @@ public class ExportFile extends javax.swing.JFrame {
         rbTXT = new javax.swing.JRadioButton();
         rbJSON = new javax.swing.JRadioButton();
         btnCancel = new javax.swing.JButton();
-        btnPreview = new javax.swing.JButton();
         btnExport = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
@@ -57,6 +102,11 @@ public class ExportFile extends javax.swing.JFrame {
 
         btnBrowse.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
         btnBrowse.setText("Browse...");
+        btnBrowse.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBrowseActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -104,37 +154,42 @@ public class ExportFile extends javax.swing.JFrame {
         btnCancel.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
         btnCancel.setForeground(new java.awt.Color(255, 255, 255));
         btnCancel.setText("Cancel");
-
-        btnPreview.setBackground(new java.awt.Color(40, 167, 69));
-        btnPreview.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
-        btnPreview.setForeground(new java.awt.Color(255, 255, 255));
-        btnPreview.setText("Preview");
+        btnCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelActionPerformed(evt);
+            }
+        });
 
         btnExport.setBackground(new java.awt.Color(0, 120, 212));
         btnExport.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
         btnExport.setForeground(new java.awt.Color(255, 255, 255));
         btnExport.setText("Export");
+        btnExport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExportActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+            .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel5)
                 .addGap(44, 44, 44)
-                .addComponent(rbTXT)
-                .addGap(18, 18, 18)
-                .addComponent(rbJSON)
-                .addGap(24, 24, 24)
-                .addComponent(btnExport, javax.swing.GroupLayout.DEFAULT_SIZE, 76, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(47, 47, 47)
-                .addComponent(btnPreview)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnCancel)
-                .addGap(46, 46, 46))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(21, 21, 21)
+                        .addComponent(btnCancel)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(rbTXT)
+                        .addGap(18, 18, 18)
+                        .addComponent(rbJSON)
+                        .addGap(24, 24, 24)
+                        .addComponent(btnExport, javax.swing.GroupLayout.DEFAULT_SIZE, 76, Short.MAX_VALUE)
+                        .addContainerGap())))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -146,9 +201,7 @@ public class ExportFile extends javax.swing.JFrame {
                     .addComponent(rbJSON)
                     .addComponent(btnExport))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnPreview)
-                    .addComponent(btnCancel))
+                .addComponent(btnCancel)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -179,6 +232,58 @@ public class ExportFile extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnBrowseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBrowseActionPerformed
+        // TODO add your handling code here:
+        javax.swing.JFileChooser chooser = new javax.swing.JFileChooser();
+        chooser.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
+        if (chooser.showOpenDialog(this) == javax.swing.JFileChooser.APPROVE_OPTION) {
+            txtSaveLocation.setText(chooser.getSelectedFile().getAbsolutePath());
+        }
+    }//GEN-LAST:event_btnBrowseActionPerformed
+
+    private void btnExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportActionPerformed
+        // TODO add your handling code here:
+        String fileName = txtFileName.getText().trim();
+        String savePath = txtSaveLocation.getText().trim();
+        boolean isTxt = rbTXT.isSelected();
+
+        if (fileName.isEmpty() || savePath.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, 
+                "Please enter file name and select save location.",
+                "Missing Information", javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String extension = isTxt ? ".txt" : ".json";
+        if (!fileName.endsWith(extension)) {
+            fileName += extension;
+        }
+
+        java.io.File file = new java.io.File(savePath, fileName);
+
+        try {
+            if (isTxt) {
+                exportToTxt(file);
+            } else {
+                exportToJson(file);
+            }
+            javax.swing.JOptionPane.showMessageDialog(this, 
+                "Export successful!\nSaved at: " + file.getAbsolutePath(), 
+                "Success", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            this.dispose();
+        } catch (Exception ex) {
+            logger.log(java.util.logging.Level.SEVERE, null, ex);
+            javax.swing.JOptionPane.showMessageDialog(this, 
+                "Export failed: " + ex.getMessage(), 
+                "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btnExportActionPerformed
+
+    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+    }//GEN-LAST:event_btnCancelActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -208,7 +313,6 @@ public class ExportFile extends javax.swing.JFrame {
     private javax.swing.JButton btnBrowse;
     private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnExport;
-    private javax.swing.JButton btnPreview;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
