@@ -309,17 +309,36 @@ public class ScanIPinRange extends javax.swing.JFrame {
 
     private void btnExportRangeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportRangeActionPerformed
         // TODO add your handling code here:
-        try {
-        // Giả sử bạn đã có class ExportFile (JFrame)
-        ExportFile exportForm = new ExportFile();
-        exportForm.setVisible(true);
-        exportForm.setLocationRelativeTo(this);
-        } catch (Exception e) {
-            logger.log(java.util.logging.Level.SEVERE, "Error opening ExportFile form", e);
+        javax.swing.table.DefaultTableModel model = 
+            (javax.swing.table.DefaultTableModel) tblResultRange.getModel();
+        int rowCount = model.getRowCount();
+        int colCount = model.getColumnCount();
+
+        if (rowCount == 0) {
             javax.swing.JOptionPane.showMessageDialog(this, 
-                    "Cannot open ExportFile form.\n" + e.getMessage(),
-                    "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                "No data to export.", 
+                "Warning", javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
         }
+
+        String[] headers = new String[colCount];
+        for (int i = 0; i < colCount; i++) {
+            headers[i] = model.getColumnName(i);
+        }
+
+        java.util.List<String[]> exportData = new java.util.ArrayList<>();
+        for (int r = 0; r < rowCount; r++) {
+            String[] row = new String[colCount];
+            for (int c = 0; c < colCount; c++) {
+                Object value = model.getValueAt(r, c);
+                row[c] = (value == null) ? "" : value.toString();
+            }
+            exportData.add(row);
+        }
+        
+        Frontend.ExportFile exportForm = new Frontend.ExportFile(exportData, headers);
+        exportForm.setLocationRelativeTo(this);
+        exportForm.setVisible(true);
     }//GEN-LAST:event_btnExportRangeActionPerformed
 
     private void btnCloseRangeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseRangeActionPerformed
